@@ -1,31 +1,21 @@
-const { createServer } = require("http");
-const fs = require("fs");
-const url = require("url");
+const express = require("express");
+const app = express();
 
-const hostname = "localhost";
-const port = 8080;
+const PORT = 8080;
 
-const server = createServer((req, res) => {
-  const q = url.parse(req.url, true);
-  const filename = req.url === "/" ? "./index.html" : `.${q.pathname}.html`;
-
-  fs.readFile(filename, "utf-8", (err, data) => {
-    if (err) {
-      fs.readFile("./404.html", "utf-8", (err, data) => {
-        res.writeHead(404, { "Content-Type": "text/html" });
-        res.write(data);
-        return res.end();
-      });
-      return;
-    }
-    res.writeHead(200, { "Content-Type": "text/html" });
-    if (data) {
-      res.write(data);
-    }
-    return res.end();
-  });
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+app.get("/about", (req, res) => {
+  res.sendFile(__dirname + "/about.html");
+});
+app.get("/contact-me", (req, res) => {
+  res.sendFile(__dirname + "/contact-me.html");
+});
+app.use((req, res) => {
+  res.status(404).sendFile(__dirname + "/404.html");
 });
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
